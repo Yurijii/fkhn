@@ -1,0 +1,17 @@
+from cv_bridge import CvBridge # Чтобы брать изображение
+from sensor_msgs.msg import Image # Для топика камеры
+import cv2 # OpenCV
+
+bridge = CvBridge()
+
+color = 'error' # Иницилизируем наш текст
+def color_callback(data):
+    global color # Делаем ее глобальной, чтобы потом можно было вызвать из любого места
+    cv_image = bridge.imgmsg_to_cv2(data, 'bgr8') # Берем изображение из топика камеры
+    img_hsv = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV) # Переводим изображение в HSV
+    
+    # Чтобы знать значения цвета в HSV, 119... это центр камеры
+    print(img_hsv[119][159])
+
+# Нужно добавить ноду image_raw_throttled, иначе используйте image_raw
+image_sub = rospy.Subscriber("main_camera/image_raw_throttled", Image, color_callback)
